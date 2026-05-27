@@ -127,6 +127,10 @@ def descargar_puntos_pago():
         # =============================================
         # GENERAR EXCEL
         # =============================================
+        columnas_numericas = [
+            "USUARIOS_ABONADOS",
+            "PUNTOS_PAGO"
+        ]
         output = io.BytesIO()
 
         with pd.ExcelWriter(
@@ -140,6 +144,15 @@ def descargar_puntos_pago():
                 col.upper()
                 for col in df.columns
             ]
+            # Convierte a numeros las columnas numericas
+            for col in columnas_numericas:
+
+                if col in df.columns:
+
+                    df[col] = pd.to_numeric(
+                        df[col],
+                        errors="coerce"
+                    )
 
             df.to_excel(
                 writer,
@@ -148,6 +161,10 @@ def descargar_puntos_pago():
             )
 
             workbook = writer.book
+            # agrega formato numerico
+            number_format = workbook.add_format({
+                "num_format": "#,##0" # con decimales: "num_format": "#,##0.00"
+            })
 
             worksheet = writer.sheets["PuntosPago"]
             if df.empty:
@@ -171,6 +188,13 @@ def descargar_puntos_pago():
                     col_num,
                     value,
                     header_format
+                )
+                
+                worksheet.set_column(
+                    i,
+                    i,
+                    18,
+                    number_format
                 )
 
             # =========================================
