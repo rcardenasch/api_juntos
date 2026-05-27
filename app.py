@@ -167,13 +167,16 @@ def descargar_puntos_pago():
             # =========================================
             for i, col in enumerate(df.columns):
 
-                max_len = max(
-                    df[col]
-                    .astype(str)
-                    .map(len)
-                    .max(),
-                    len(col)
-                )
+                if df.empty:
+                    max_len = len(col)
+                else:
+                    max_len = max(
+                        df[col]
+                        .astype(str)
+                        .map(len)
+                        .max(),
+                        len(col)
+                    )
 
                 worksheet.set_column(
                     i,
@@ -320,13 +323,16 @@ def descargar_acnb():
             # =========================================
             for i, col in enumerate(df.columns):
 
-                max_len = max(
-                    df[col]
-                    .astype(str)
-                    .map(len)
-                    .max(),
-                    len(col)
-                )
+                if df.empty:
+                    max_len = len(col)
+                else:
+                    max_len = max(
+                        df[col]
+                        .astype(str)
+                        .map(len)
+                        .max(),
+                        len(col)
+                    )
 
                 worksheet.set_column(
                     i,
