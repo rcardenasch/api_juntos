@@ -237,15 +237,16 @@ def descargar_acnb():
     try:
 
         # =============================================
-        # PARAMETROS
+        # NORMALIZAR PARAMS
         # =============================================
+        ut = normalizar_texto(ut) if ut else None
+        depa = normalizar_texto(depa) if depa else None
+        prov = normalizar_texto(prov) if prov else None
+        dist = normalizar_texto(dist) if dist else None
+
         depa = request.args.get("depa")
         prov = request.args.get("prov")
         dist = request.args.get("dist")
-
-        print("DEPA:", depa)
-        print("PROV:", prov)
-        print("DIST:", dist)
 
         # =============================================
         # LEER CSV
@@ -256,6 +257,23 @@ def descargar_acnb():
         # NORMALIZAR COLUMNAS
         # =============================================
         df.columns = df.columns.str.strip().str.lower()
+
+        for col in [
+                "ut",
+                "departamento",
+                "provincia",
+                "distrito"
+            ]:
+                df[col] = df[col].apply(normalizar_texto)
+
+                df[col] = (
+                    df[col]
+                    .fillna("")
+                    .astype(str)
+                    .str.replace(".0", "", regex=False)
+                    .str.strip()
+                    .str.upper()
+                )
 
         # =============================================
         # FILTROS
