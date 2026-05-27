@@ -32,19 +32,22 @@ def normalizar_texto(texto):
 
     texto = str(texto)
 
-    # quitar tildes
+    texto = unicodedata.normalize("NFKD", texto)
+
     texto = ''.join(
-        c for c in unicodedata.normalize('NFD', texto)
-        if unicodedata.category(c) != 'Mn'
+        c for c in texto
+        if not unicodedata.combining(c)
     )
 
-    # limpiar
     texto = (
         texto
         .replace(".0", "")
+        .replace("\xa0", " ")
         .strip()
         .upper()
     )
+
+    texto = " ".join(texto.split())
 
     return texto
 
@@ -95,15 +98,6 @@ def descargar_puntos_pago():
         ]:
             df[col] = df[col].apply(normalizar_texto)
 
-            df[col] = (
-                df[col]
-                .fillna("")
-                .astype(str)
-                .str.replace(".0", "", regex=False)
-                .str.strip()
-                .str.upper()
-            )
-
         # =============================================
         # NORMALIZAR PARAMS
         # =============================================
@@ -131,16 +125,6 @@ def descargar_puntos_pago():
             df = df[df["distrito"] == dist]
 
         # =============================================
-        # VALIDAR VACIO
-        # =============================================
-        if df.empty:
-
-            return jsonify({
-                "status": 204,
-                "message": "Sin registros"
-            }), 204
-
-        # =============================================
         # GENERAR EXCEL
         # =============================================
         output = io.BytesIO()
@@ -166,6 +150,8 @@ def descargar_puntos_pago():
             workbook = writer.book
 
             worksheet = writer.sheets["PuntosPago"]
+            if df.empty:
+                worksheet.write("A2", "SIN REGISTROS")
 
             # =========================================
             # HEADER FORMAT
@@ -235,18 +221,16 @@ def descargar_puntos_pago():
 def descargar_acnb():
 
     try:
-
-        # =============================================
-        # NORMALIZAR PARAMS
-        # =============================================
-        ut = normalizar_texto(ut) if ut else None
-        depa = normalizar_texto(depa) if depa else None
-        prov = normalizar_texto(prov) if prov else None
-        dist = normalizar_texto(dist) if dist else None
-
         depa = request.args.get("depa")
         prov = request.args.get("prov")
         dist = request.args.get("dist")
+        
+        # =============================================
+        # NORMALIZAR PARAMS
+        # =============================================
+        depa = normalizar_texto(depa) if depa else None
+        prov = normalizar_texto(prov) if prov else None
+        dist = normalizar_texto(dist) if dist else None
 
         # =============================================
         # LEER CSV
@@ -259,61 +243,23 @@ def descargar_acnb():
         df.columns = df.columns.str.strip().str.lower()
 
         for col in [
-                "ut",
                 "departamento",
                 "provincia",
                 "distrito"
             ]:
                 df[col] = df[col].apply(normalizar_texto)
 
-                df[col] = (
-                    df[col]
-                    .fillna("")
-                    .astype(str)
-                    .str.replace(".0", "", regex=False)
-                    .str.strip()
-                    .str.upper()
-                )
-
         # =============================================
         # FILTROS
         # =============================================
         if depa and depa != "ALL":
-
-            df = df[
-                df["departamento"]
-                .astype(str)
-                .str.upper()
-                == depa.upper()
-            ]
+            df = df[df["departamento"] == depa]
 
         if prov and prov != "ALL":
-
-            df = df[
-                df["provincia"]
-                .astype(str)
-                .str.upper()
-                == prov.upper()
-            ]
+            df = df[df["provincia"] == prov]
 
         if dist and dist != "ALL":
-
-            df = df[
-                df["distrito"]
-                .astype(str)
-                .str.upper()
-                == dist.upper()
-            ]
-
-        # =============================================
-        # VALIDAR VACIO
-        # =============================================
-        if df.empty:
-
-            return jsonify({
-                "status": 204,
-                "message": "Sin registros"
-            }), 204
+            df = df[df["distrito"] == dist]
 
         # =============================================
         # GENERAR EXCEL
@@ -340,6 +286,9 @@ def descargar_acnb():
             workbook = writer.book
 
             worksheet = writer.sheets["ACNB"]
+            
+            if df.empty:
+                worksheet.write("A2", "SIN REGISTROS")
 
             # =========================================
             # HEADER FORMAT
