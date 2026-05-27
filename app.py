@@ -96,7 +96,8 @@ def descargar_puntos_pago():
             "provincia",
             "distrito"
         ]:
-            df[col] = df[col].apply(normalizar_texto)
+            if col in df.columns:
+                df[col] = df[col].apply(normalizar_texto)
 
         # =============================================
         # NORMALIZAR PARAMS
@@ -189,13 +190,6 @@ def descargar_puntos_pago():
                     value,
                     header_format
                 )
-                
-                worksheet.set_column(
-                    i,
-                    i,
-                    18,
-                    number_format
-                )
 
             # =========================================
             # AUTO WIDTH
@@ -213,11 +207,25 @@ def descargar_puntos_pago():
                         len(col)
                     )
 
-                worksheet.set_column(
-                    i,
-                    i,
-                    min(max_len + 2, 50)
-                )
+                width = min(max_len + 2, 50)
+
+                # columnas numericas
+                if col in columnas_numericas:
+
+                    worksheet.set_column(
+                        i,
+                        i,
+                        width,
+                        number_format
+                    )
+
+                else:
+
+                    worksheet.set_column(
+                        i,
+                        i,
+                        width
+                    )
 
         output.seek(0)
 
@@ -267,12 +275,12 @@ def descargar_acnb():
         df.columns = df.columns.str.strip().str.lower()
 
         for col in [
-                "departamento",
-                "provincia",
-                "distrito"
-            ]:
+            "departamento",
+            "provincia",
+            "distrito"
+        ]:
+            if col in df.columns:
                 df[col] = df[col].apply(normalizar_texto)
-
         # =============================================
         # FILTROS
         # =============================================
