@@ -1,6 +1,7 @@
 from flask import Flask, send_file, request, jsonify
 import pandas as pd
 import io
+import unicodedata
 
 app = Flask(__name__)
 
@@ -23,6 +24,29 @@ URL_ACNB = (
     "1-ZE_bRAGQtYq2D6iSd79AYzPxek9KOAbikWEFhW9oYw"
     "/export?format=csv&gid=801021966"
 )
+
+def normalizar_texto(texto):
+
+    if pd.isna(texto):
+        return ""
+
+    texto = str(texto)
+
+    # quitar tildes
+    texto = ''.join(
+        c for c in unicodedata.normalize('NFD', texto)
+        if unicodedata.category(c) != 'Mn'
+    )
+
+    # limpiar
+    texto = (
+        texto
+        .replace(".0", "")
+        .strip()
+        .upper()
+    )
+
+    return texto
 
 # =====================================================
 # ENDPOINT PUNTOS DE PAGO
@@ -69,6 +93,7 @@ def descargar_puntos_pago():
             "provincia",
             "distrito"
         ]:
+            df[col] = df[col].apply(normalizar_texto)
 
             df[col] = (
                 df[col]
@@ -82,10 +107,10 @@ def descargar_puntos_pago():
         # =============================================
         # NORMALIZAR PARAMS
         # =============================================
-        ut = str(ut).strip().upper() if ut else None
-        depa = str(depa).strip().upper() if depa else None
-        prov = str(prov).strip().upper() if prov else None
-        dist = str(dist).strip().upper() if dist else None
+        ut = normalizar_texto(ut) if ut else None
+        depa = normalizar_texto(depa) if depa else None
+        prov = normalizar_texto(prov) if prov else None
+        dist = normalizar_texto(dist) if dist else None
 
         print(df["ut"].unique()[:20])
         print("UT RECIBIDO:", repr(ut))
