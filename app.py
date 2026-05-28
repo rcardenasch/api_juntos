@@ -233,12 +233,17 @@ def descargar_puntos_pago():
         # =============================================
         # RESPONSE
         # =============================================
-        return send_file(
-            output,
-            as_attachment=True,
-            download_name="Reporte_Puntos_Pago.xlsx",
+        excel_data = output.getvalue()
+
+        return Response(
+            excel_data,
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            max_age=0
+            headers={
+                "Content-Disposition":
+                    "attachment; filename=Reporte_Puntos_Pago.xlsx",
+                "Connection": "close",
+                "Cache-Control": "no-store"
+            }
         )
 
     except Exception as e:
