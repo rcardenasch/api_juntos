@@ -1,4 +1,4 @@
-from flask import Flask, send_file, request, jsonify
+from flask import Flask,Response, send_file, request, jsonify
 import pandas as pd
 import io
 import unicodedata
@@ -371,18 +371,18 @@ def descargar_acnb():
         # =============================================
         # RESPONSE
         # =============================================
-        return send_file(
-            output,
-            as_attachment=True,
-            download_name="Reporte_ACNB.xlsx",
-            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            max_age=0
-        )
-        response.headers["Connection"] = "close"
-        response.headers["Cache-Control"] = "no-store"
-        response.headers["X-Accel-Buffering"] = "no"
+        excel_data = output.getvalue()
 
-        return response
+        return Response(
+            excel_data,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={
+                "Content-Disposition":
+                    "attachment; filename=Reporte_ACNB.xlsx",
+                "Connection": "close",
+                "Cache-Control": "no-store"
+            }
+        )
 
     except Exception as e:
 
