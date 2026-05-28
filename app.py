@@ -236,7 +236,8 @@ def descargar_puntos_pago():
             output,
             as_attachment=True,
             download_name="Reporte_Puntos_Pago.xlsx",
-            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            max_age=0
         )
 
     except Exception as e:
@@ -267,7 +268,7 @@ def descargar_acnb():
         # =============================================
         # LEER CSV
         # =============================================
-        df = pd.read_csv(URL_ACNB)
+        df = pd.read_csv(URL_ACNB,dtype=str)
 
         # =============================================
         # NORMALIZAR COLUMNAS
@@ -373,7 +374,8 @@ def descargar_acnb():
             output,
             as_attachment=True,
             download_name="Reporte_ACNB.xlsx",
-            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            max_age=0
         )
 
     except Exception as e:
@@ -383,6 +385,12 @@ def descargar_acnb():
             "error": str(e)
         }), 500
 
+# HEALTHCHECK
+@app.route("/health")
+def health():
+    return jsonify({
+        "status": "ok"
+    }), 200
 
 # =====================================================
 # MAIN
