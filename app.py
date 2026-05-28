@@ -136,7 +136,8 @@ def descargar_puntos_pago():
 
         with pd.ExcelWriter(
             output,
-            engine="xlsxwriter"
+            engine="openpyxl" #"xlsxwriter"
+
         ) as writer:
             # =============================================
             # RESTAURAR MAYUSCULAS
@@ -250,7 +251,7 @@ def descargar_puntos_pago():
 # =====================================================
 # ENDPOINT ACNB
 # =====================================================
-@app.route("/descargar/acnb")
+@app.route("/descargar/acnb", methods=["GET"])
 def descargar_acnb():
 
     try:
@@ -377,6 +378,11 @@ def descargar_acnb():
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             max_age=0
         )
+        response.headers["Connection"] = "close"
+        response.headers["Cache-Control"] = "no-store"
+        response.headers["X-Accel-Buffering"] = "no"
+
+        return response
 
     except Exception as e:
 
