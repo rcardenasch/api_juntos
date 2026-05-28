@@ -136,7 +136,7 @@ def descargar_puntos_pago():
 
         with pd.ExcelWriter(
             output,
-            engine="xlsxwriter"
+            engine="openpyxl" #"xlsxwriter"
 
         ) as writer:
             # =============================================
@@ -302,7 +302,7 @@ def descargar_acnb():
 
         with pd.ExcelWriter(
             output,
-            engine="xlsxwriter"
+            engine="openpyxl" #"xlsxwriter"
         ) as writer:
             # =============================================
             # RESTAURAR MAYUSCULAS
