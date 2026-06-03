@@ -2,8 +2,8 @@ name: Wake Up Render
 
 on:
   schedule:
-    # cada 10 minutos
-    - cron: "*/10 * * * *"
+    # cada 1000 minutos
+    - cron: "*/1000 * * * *"
 
   workflow_dispatch:
 
