@@ -21,4 +21,7 @@ jobs:
           echo "Despertando App Combustible..."
           curl -L --fail https://app-combustible.onrender.com
 
+          echo "Despertando App Combustible..."
+          curl -L --fail https://app-ferreteria-iziy.onrender.com
+          
           echo "Todas las APIs fueron consultadas."
