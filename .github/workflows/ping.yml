@@ -2,8 +2,8 @@ name: Wake Up Render
 
 on:
   schedule:
-    # cada 1000 minutos
-    - cron: "*/1000 * * * *"
+    # Cada 10 minutos
+    - cron: "*/10 * * * *"
 
   workflow_dispatch:
 
@@ -12,6 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Ping Render App
+      - name: Wake Up APIs
         run: |
-          curl -L https://api-juntos.onrender.com/health
+
+          echo "Despertando Tienda Vicky..."
+          curl -L --fail https://app-tienda-vicky.onrender.com
+
+          echo "Despertando App Combustible..."
+          curl -L --fail https://app-combustible.onrender.com
+
+          echo "Todas las APIs fueron consultadas."
