@@ -15,6 +15,6 @@ jobs:
       - name: Wake Up APIs
         run: |
           echo "Despertando App Combustible..."
-          curl -L --fail https://app-combustible.onrender.com
+          # curl -L --fail https://app-combustible.onrender.com
           
           echo "Todas las APIs fueron consultadas."
